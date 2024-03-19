@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:expenses/components/chart.dart';
@@ -51,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final List<Transaction> _transactions = [];
+  bool _showChart = false;
 
   List<Transaction> get _recentTransactions {
     return _transactions.where((transaction) {
@@ -95,19 +97,37 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
+    final mediaQuery = MediaQuery.of(context);
+    final _isLandscape = mediaQuery.orientation == Orientation.landscape;
+
     final appBar = AppBar(
       title: Text('Despesas Pessoais'),
       actions: [
+        if (_isLandscape)
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _showChart = !_showChart;
+              });
+            }, 
+            icon: Icon(
+              _showChart ? Icons.list : Icons.auto_graph, 
+              color: Colors.white
+            )
+          ),
         IconButton(
           onPressed: () => _openTransactionFormModal(context), 
-          icon: Icon(Icons.add)
+          icon: Icon(
+            Icons.add,
+            color: Colors.white
+          )
         )
       ],
       backgroundColor: Theme.of(context).colorScheme.primary,
     );
 
-    final availableHeight = MediaQuery.of(context).size.height 
-      - appBar.preferredSize.height - MediaQuery.of(context).padding.top;
+    final availableHeight = mediaQuery.size.height 
+      - appBar.preferredSize.height - mediaQuery.padding.top;
 
     return Scaffold(
       appBar: appBar,
@@ -115,25 +135,27 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              height: availableHeight * 0.2,
-              child: Chart(_recentTransactions)
-            ),
-            Container(
-              height: availableHeight * 0.8,
-              child: TransactionList(
-                transactions: _transactions,
-                removeTransaction: _removeTransaction,
+            if (_showChart || !_isLandscape) 
+              Container(
+                height: availableHeight * (_isLandscape ? 0.7 : 0.2),
+                child: Chart(_recentTransactions)
               ),
-            )
+            if (!_showChart || !_isLandscape) 
+              Container(
+                height: availableHeight * (_isLandscape ? 1 : 0.8),
+                child: TransactionList(
+                  transactions: _transactions,
+                  removeTransaction: _removeTransaction,
+                ),
+              )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Platform.isAndroid ? FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => _openTransactionFormModal(context),
         backgroundColor: Theme.of(context).colorScheme.secondary,
-      ),
+      ) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
