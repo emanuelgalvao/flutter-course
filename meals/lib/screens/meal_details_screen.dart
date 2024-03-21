@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:meals/components/utils/custom_app_bar.dart';
+import 'package:meals/components/custom_app_bar.dart';
 import 'package:meals/models/meal.dart';
 
 class MealDetailsScreen extends StatelessWidget {
+
+  final Function (Meal) _onFavorited;
+  final Function (Meal) _isFavorite;
+
+  const MealDetailsScreen(this._onFavorited, this._isFavorite);
+
   Widget _createSectionTitle(BuildContext context, String title) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -59,7 +65,8 @@ class MealDetailsScreen extends StatelessWidget {
               ),
             ),
             _createSectionTitle(context, 'Passos'),
-            _createSectionContent(child: ListView.builder(
+            _createSectionContent(
+                child: ListView.builder(
               itemCount: meal.steps.length,
               itemBuilder: (_, index) {
                 return Column(
@@ -79,6 +86,12 @@ class MealDetailsScreen extends StatelessWidget {
             ))
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _onFavorited(meal),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        foregroundColor: Colors.white,
+        child: Icon(_isFavorite(meal) ? Icons.favorite : Icons.favorite_outline),
       ),
     );
   }
