@@ -39,7 +39,7 @@ class Cart with ChangeNotifier {
       _items.putIfAbsent(
         product.id,
         () => CartItem(
-          id: Random().nextDouble().toString(),
+          id: Random().nextInt(1000).toString(),
           productId: product.id,
           name: product.name,
           quantity: 1,

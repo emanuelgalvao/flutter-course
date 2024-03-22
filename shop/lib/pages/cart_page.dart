@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop/components/cart_item_widget.dart';
 import 'package:shop/components/custom_app_bar.dart';
 import 'package:shop/models/cart.dart';
+import 'package:shop/models/order_list.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -17,7 +18,7 @@ class CartPage extends StatelessWidget {
       body: Column(
         children: [
           Card(
-            margin: EdgeInsets.all(25),
+            margin: const EdgeInsets.all(15),
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Row(
@@ -37,7 +38,10 @@ class CartPage extends StatelessWidget {
                       )),
                   const Spacer(),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<OrderList>(context, listen: false).addOrder(cart);
+                      cart.clear();
+                    },
                     child: Text(
                       'COMPRAR',
                       style: Theme.of(context)
@@ -52,8 +56,10 @@ class CartPage extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) => CartItemWidget(cartItem: items[index]),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return CartItemWidget(cartItem: items[index]);
+              },
             ),
           )
         ],
