@@ -4,7 +4,6 @@ import 'package:shop/components/custom_app_bar.dart';
 import 'package:shop/components/order_item.dart';
 import 'package:shop/models/order.dart';
 import 'package:shop/models/order_list.dart';
-import 'package:intl/intl.dart';
 
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
