@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop/models/product.dart';
 import 'package:shop/providers/product_list.dart';
 import 'package:shop/utils/app_routes.dart';
+import 'package:shop/utils/http_exception.dart';
 
 class ProductItem extends StatelessWidget {
   final Product product;
@@ -10,6 +11,9 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final messager = ScaffoldMessenger.of(context);
+
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: NetworkImage(product.imageUrl),
@@ -53,10 +57,14 @@ class ProductItem extends StatelessWidget {
                       )
                     ],
                   ),
-                ).then((confirmDelete) {
+                ).then((confirmDelete) async {
                   if (confirmDelete) {
-                    Provider.of<ProductList>(context, listen: false)
-                        .removeProduct(product);
+                    try {
+                      await Provider.of<ProductList>(context, listen: false)
+                          .removeProduct(product);
+                    } on HttpException catch (error) {
+                      messager.showSnackBar(SnackBar(content: Text(error.message)));
+                    }
                   }
                 });
               },
